@@ -3,6 +3,7 @@ import { render } from 'react-dom';
 import Header from '../components/Header'
 import { ThirdwebSDK } from '@3rdweb/sdk'
 import { useWeb3 } from '@3rdweb/hooks'
+import { ethers } from "ethers";
 import { client } from '../lib/sanityClient'
 
 export default function CreateItem() {
@@ -12,6 +13,7 @@ export default function CreateItem() {
     const[name,setName] = useState("")
     const[description,setDescription] = useState("")
     const[price,setPrice] = useState("")
+    const[image,setImage] = useState("")
 
 const fetchCollectionData = async (sanityClient = client) => {
     const query = `*[_type == "marketItems" && contractAddress == "0x00B70C4aD93336E92eA0517fCA3aC0D0Fd5f5e10" ] {
@@ -29,24 +31,21 @@ const fetchCollectionData = async (sanityClient = client) => {
 
     console.log(collectionData, '🔥------------')
     let contractDataAddress = collectionData[0].contractAddress
+    let contractDataAddress1 = collectionData
     console.log(contractDataAddress,"contractAddresvfs-------------")
+    console.log(contractDataAddress1,"contractAddresvfs-------------")
     // the query returns 1 object inside of an array
     await setCollection(collectionData[0])
+
+    
    
 }
     useEffect(() => {
         fetchCollectionData()
+        
+        
       }, [])
-    
-    // const sdk = new ThirdwebSDK();
-    // console.log(sdk.event,"ThirdwebSDK------------");
-    // const a = new ThirdwebSDK.
-    // console.log(a,"---------------a")
-    // const metadata = {
-    //     name: "Cool NFT",
-    //     description: "This is a cool NFT",
-    //     image: fs.readFileSync("path/to/image.png"), // This can be an image url or file
-    // };
+      
     const handleChange1 = event => {
         setName(event.target.value);
        
@@ -57,55 +56,40 @@ const fetchCollectionData = async (sanityClient = client) => {
     const handleChange3 = event => {
         setPrice(event.target.value);
     }
-    // const handleChange4 = event => {
-    //     setImage(event.target.value);
-    // }
+    const handleChange4 = e => {
+        let data = e.target.files[0]
+        setImage(data)
+    }
 
     const onChange = (event) => {
         setValue(event.target.value);
     };
-    // const nftModule = useMemo(() => {
-    //     if (!provider) return
     
-    //     const sdk = new ThirdwebSDK(
-    //       provider.getSigner()
-    //       // 'https://rinkeby.infura.io/v3/a464b9152d8c466c8a94a514fce8e837'
-    //       // 'https://eth-rinkeby.alchemyapi.io/v2/WoQ58XHoFbpSlyw4VAVpJF9YpkMuYwKg'
-    //     )
-    //     return sdk.getNFTModule('0x00B70C4aD93336E92eA0517fCA3aC0D0Fd5f5e10')
-    //   }, [provider])
-    
-    //   // get all NFTs in the collection
-    //   useEffect(() => {
-    //     if (!nftModule) return
-    //     ;(async () => {
-    //       const nfts = await nftModule.getAll()
-    
-    //       setNfts(nfts)
-    //     })()
-    //   }, [nftModule])
-
     function onSubmit(event) {
         event.preventDefault()
-    //     const sdk = new ThirdwebSDK()
-    // return sdk.contract('0x00B70C4aD93336E92eA0517fCA3aC0D0Fd5f5e10');
-        // let reader = new FileReader()
-        // let imagedata = reader.readAsDataURL(image)
+        console.log(image);
+
         let data = {
             name:name,
             description: description,
             price: price,
-            // image:imagedata,
+            image:image,
         }
-
-        // debugger
+        
         console.log(data)
-     let ts =  sdk.getNFTModule(toAddress, data);
-     console.log(ts,"=------------------------");
+        const rpcUrl = "rinkeby";
+    const wallet = new ethers.Wallet(
+        "8f485f65c6efba9bcb5419d0f6283cec90b3e753772d8c0457954306e10edf90",
+        ethers.getDefaultProvider(rpcUrl)
+      );
+    const nft = new ThirdwebSDK(wallet).getNFTModule(
+        "0x00B70C4aD93336E92eA0517fCA3aC0D0Fd5f5e10"
+      );
+     const tx = nft.mintTo(toAddress, data);
+     console.log(tx);
         }
         
         
-    // const tx = await contract.mintTo(toAddress, metadata);
 
     return (
         <>
@@ -138,16 +122,15 @@ const fetchCollectionData = async (sanityClient = client) => {
                             
                         />
 
-                        {/* <input
+                        <input
                             type="file"
                             name="Asset"
                             className="my-4"
+                            accept = "image/*"
                             name= "image"
-                            value={image}
+                            defaultValue={image}
                             onChange={handleChange4}
-                            // value={values.image}
-                            // onChange={set('image')}
-                        /> */}
+                        />
                         {/* {
                             fileUrl && (
                                 <img className="rounded mt-4" width="350" src={fileUrl} />
