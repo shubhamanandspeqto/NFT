@@ -106,6 +106,7 @@ const Collection = () => {
   }
 
   useEffect(() => {
+    // debugger
     fetchCollectionData()
   }, [collectionId])
 

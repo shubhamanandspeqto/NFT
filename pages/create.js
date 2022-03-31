@@ -101,8 +101,8 @@ export default function CreateItem() {
         const nft = new ThirdwebSDK(wallet).getNFTModule(
             "0x00B70C4aD93336E92eA0517fCA3aC0D0Fd5f5e10"
         );
-        sucessNotify()
-      nft.mintTo(toAddress, data).then(data=>{
+        nft.mintTo(toAddress, data).then(data=>{
+          sucessNotify()
              router.push('/')
 
         }).catch(err =>{
